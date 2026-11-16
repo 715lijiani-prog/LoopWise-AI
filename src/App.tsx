@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
+import {Navigate, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import {Footer} from './components/Footer';
 import {Navbar} from './components/Navbar';
 import {PAGE_SEO, PageRoute} from './data/siteData';
+import {Ga4PageTracker} from './hooks/useGa4PageTracking';
 import {AboutPage} from './pages/AboutPage';
 import {ContactPage} from './pages/ContactPage';
 import {HomePage} from './pages/HomePage';
@@ -14,66 +16,54 @@ import {LearningHubPage} from './pages/LearningHubPage';
 import {SolutionsPage} from './pages/SolutionsPage';
 import {SuccessStoriesPage} from './pages/SuccessStoriesPage';
 
-const VALID_PAGES: PageRoute[] = [
-  'home',
-  'solutions',
-  'learning-hub',
-  'success-stories',
-  'contact',
-  'about',
-];
+const PATH_TO_PAGE: Record<string, PageRoute> = {
+  '/': 'home',
+  '/home': 'home',
+  '/solutions': 'solutions',
+  '/learning-hub': 'learning-hub',
+  '/success-stories': 'success-stories',
+  '/contact': 'contact',
+  '/about': 'about',
+};
 
-function parseRouteFromHash(): {page: PageRoute; anchor?: string} {
-  const rawHash = window.location.hash.replace(/^#/, '');
-  if (!rawHash) return {page: 'home'};
-  const [pagePart, anchorPart] = rawHash.split('/');
-  if (VALID_PAGES.includes(pagePart as PageRoute)) {
-    return {page: pagePart as PageRoute, anchor: anchorPart};
-  }
-  return {page: 'home'};
+function getPageFromPathname(pathname: string): PageRoute {
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  return PATH_TO_PAGE[normalized] ?? 'home';
 }
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<PageRoute>(() => parseRouteFromHash().page);
+  const location = useLocation();
+  const routerNavigate = useNavigate();
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
 
-  const navigate = (page: PageRoute, anchor?: string) => {
-    setCurrentPage(page);
-    const nextHash = anchor ? `#${page}/${anchor}` : `#${page}`;
-    if (window.location.hash !== nextHash) {
-      window.history.pushState(null, '', nextHash);
-    }
+  const currentPage = getPageFromPathname(location.pathname);
 
-    if (anchor) {
-      window.setTimeout(() => {
-        const el = document.getElementById(anchor);
+  const handleNavigate = useCallback(
+    (page: PageRoute, anchor?: string) => {
+      const targetPath = page === 'home' ? '/' : `/${page}`;
+      routerNavigate({
+        pathname: targetPath,
+        hash: anchor ? `#${anchor}` : '',
+      });
+    },
+    [routerNavigate]
+  );
+
+  // Handle section anchor scrolling or scroll-to-top on route change
+  useEffect(() => {
+    const anchorId = location.hash.replace(/^#/, '');
+    if (anchorId) {
+      const timer = window.setTimeout(() => {
+        const el = document.getElementById(anchorId);
         if (el) {
           el.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
       }, 60);
-    } else {
-      window.scrollTo({top: 0, behavior: 'smooth'});
+      return () => window.clearTimeout(timer);
     }
-  };
 
-  // Sync browser back/forward navigation
-  useEffect(() => {
-    const onHashChange = () => {
-      const parsed = parseRouteFromHash();
-      setCurrentPage(parsed.page);
-      if (parsed.anchor) {
-        window.setTimeout(() => {
-          const el = document.getElementById(parsed.anchor!);
-          el?.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }, 60);
-      } else {
-        window.scrollTo({top: 0, behavior: 'smooth'});
-      }
-    };
-
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, [location.pathname, location.hash]);
 
   // Sync per-page SEO title, meta description, OpenGraph, and JSON-LD structured data
   useEffect(() => {
@@ -101,29 +91,43 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F5EF] text-[#14241B]">
-      <Navbar currentPage={currentPage} onNavigate={navigate} />
+      <Ga4PageTracker />
+      <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
       <main className="flex-1">
-        {currentPage === 'home' && (
-          <HomePage
-            onNavigate={navigate}
-            onSelectArticle={(articleId) => setSelectedArticleId(articleId)}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                onNavigate={handleNavigate}
+                onSelectArticle={(articleId) => setSelectedArticleId(articleId)}
+              />
+            }
           />
-        )}
-        {currentPage === 'solutions' && <SolutionsPage onNavigate={navigate} />}
-        {currentPage === 'learning-hub' && (
-          <LearningHubPage
-            selectedArticleId={selectedArticleId}
-            onSelectArticle={setSelectedArticleId}
-            onNavigate={navigate}
+          <Route path="/home" element={<Navigate to="/" replace />} />
+          <Route path="/solutions" element={<SolutionsPage onNavigate={handleNavigate} />} />
+          <Route
+            path="/learning-hub"
+            element={
+              <LearningHubPage
+                selectedArticleId={selectedArticleId}
+                onSelectArticle={setSelectedArticleId}
+                onNavigate={handleNavigate}
+              />
+            }
           />
-        )}
-        {currentPage === 'success-stories' && <SuccessStoriesPage onNavigate={navigate} />}
-        {currentPage === 'contact' && <ContactPage />}
-        {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
+          <Route
+            path="/success-stories"
+            element={<SuccessStoriesPage onNavigate={handleNavigate} />}
+          />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage onNavigate={handleNavigate} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
-      <Footer onNavigate={navigate} />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
 }

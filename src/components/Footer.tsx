@@ -13,7 +13,7 @@ export function Footer({onNavigate}: FooterProps) {
           {/* Brand Summary */}
           <div className="md:col-span-5 space-y-4">
             <a
-              href="#home"
+              href="#/"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate('home');
@@ -39,7 +39,7 @@ export function Footer({onNavigate}: FooterProps) {
               <ul className="space-y-2.5 text-[#F7F5EF]/75">
                 <li>
                   <a
-                    href="#home"
+                    href="#/"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('home');
@@ -51,7 +51,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#solutions"
+                    href="#/solutions#waste-scanner"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('solutions', 'waste-scanner');
@@ -63,7 +63,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#solutions"
+                    href="#/solutions#sustainability-coach"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('solutions', 'sustainability-coach');
@@ -75,7 +75,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#solutions"
+                    href="#/solutions#esg-calculator"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('solutions', 'esg-calculator');
@@ -93,7 +93,7 @@ export function Footer({onNavigate}: FooterProps) {
               <ul className="space-y-2.5 text-[#F7F5EF]/75">
                 <li>
                   <a
-                    href="#learning-hub"
+                    href="#/learning-hub"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('learning-hub');
@@ -105,7 +105,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#success-stories"
+                    href="#/success-stories"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('success-stories');
@@ -117,7 +117,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#about"
+                    href="#/about"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('about');
@@ -135,7 +135,7 @@ export function Footer({onNavigate}: FooterProps) {
               <ul className="space-y-2.5 text-[#F7F5EF]/75">
                 <li>
                   <a
-                    href="#contact"
+                    href="#/contact#b2b-consultation"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('contact', 'b2b-consultation');
@@ -147,7 +147,7 @@ export function Footer({onNavigate}: FooterProps) {
                 </li>
                 <li>
                   <a
-                    href="#contact"
+                    href="#/contact#community-booking"
                     onClick={(e) => {
                       e.preventDefault();
                       onNavigate('contact', 'community-booking');

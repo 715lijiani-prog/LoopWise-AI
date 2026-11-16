@@ -28,7 +28,7 @@ export function Navbar({currentPage, onNavigate}: NavbarProps) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
         {/* Zone 1: Single-line Brand Wordmark */}
         <a
-          href="#home"
+          href="#/"
           onClick={(e) => {
             e.preventDefault();
             handleNav('home');
@@ -45,7 +45,7 @@ export function Navbar({currentPage, onNavigate}: NavbarProps) {
             return (
               <a
                 key={item.page}
-                href={`#${item.page}`}
+                href={`#/${item.page}`}
                 onClick={(e) => {
                   e.preventDefault();
                   handleNav(item.page);
@@ -94,7 +94,7 @@ export function Navbar({currentPage, onNavigate}: NavbarProps) {
           className="md:hidden border-t border-[#1F5C3A]/12 bg-[#F7F5EF] px-4 py-4 space-y-1"
         >
           <a
-            href="#home"
+            href="#/"
             onClick={(e) => {
               e.preventDefault();
               handleNav('home');
@@ -110,7 +110,7 @@ export function Navbar({currentPage, onNavigate}: NavbarProps) {
           {NAV_ITEMS.map((item) => (
             <a
               key={item.page}
-              href={`#${item.page}`}
+              href={`#/${item.page}`}
               onClick={(e) => {
                 e.preventDefault();
                 handleNav(item.page);
