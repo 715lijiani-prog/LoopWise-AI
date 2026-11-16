@@ -1,0 +1,6 @@
+{
+  "name": "LoopWise AI",
+  "description": "Circular economy digital platform helping households, cafés, and businesses across Victoria recycle coffee grounds, sort soft plastics, and measure ESG waste diversion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
